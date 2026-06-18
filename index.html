@@ -144,9 +144,12 @@
   }
 
   .card{
+    position:relative;
     width:100%;
     max-width:540px;
     border-radius:30px;
+    --banner-h: clamp(150px, 30vw, 230px);
+    --avatar-size: clamp(84px, 18vw, 116px);
     background: linear-gradient(165deg, var(--glass-strong), var(--glass));
     backdrop-filter: blur(22px) saturate(160%);
     -webkit-backdrop-filter: blur(22px) saturate(160%);
@@ -170,7 +173,7 @@
 
   .banner-wrap{
     position:relative;
-    height: clamp(150px, 30vw, 230px);
+    height: var(--banner-h);
     overflow:hidden;
   }
   .banner{
@@ -189,14 +192,14 @@
 
   .avatar-wrap{
     position:absolute;
-    bottom: -38px;
+    top: calc(var(--banner-h) + 38px - var(--avatar-size));
     left: 28px;
     transform: translateZ(50px);
     z-index:3;
   }
   .avatar{
-    width: clamp(84px, 18vw, 116px);
-    height: clamp(84px, 18vw, 116px);
+    width: var(--avatar-size);
+    height: var(--avatar-size);
     border-radius:50%;
     display:block;
     object-fit:cover;
@@ -395,10 +398,10 @@
     <div class="banner-wrap">
       <img class="banner" src="https://i.ibb.co/SwBZwLZL/40d5429f161eea1bd948f0d5d19de08e.jpg" alt="">
       <div class="banner-fade"></div>
-      <div class="avatar-wrap">
-        <img class="avatar" src="https://i.ibb.co/67mzvFbJ/4b7f9782977aea6e8a59dc9d6dae0317.gif" alt="ded's avatar">
-        <span class="status-dot" aria-hidden="true"></span>
-      </div>
+    </div>
+    <div class="avatar-wrap">
+      <img class="avatar" src="https://i.ibb.co/67mzvFbJ/4b7f9782977aea6e8a59dc9d6dae0317.gif" alt="ded's avatar">
+      <span class="status-dot" aria-hidden="true"></span>
     </div>
 
     <div class="card-body">
