@@ -388,7 +388,7 @@
   <span class="enter-note">sound on</span>
 </div>
 
-<div id="audioContainer" style="position:fixed; width:0; height:0; overflow:hidden;" aria-hidden="true"></div>
+<div id="ytPlayer" style="position:fixed; width:0; height:0; overflow:hidden;" aria-hidden="true"></div>
 
 <video class="bg-video" autoplay muted loop playsinline>
   <source src="https://files.catbox.moe/hqovmp.mp4" type="video/mp4">
@@ -437,22 +437,54 @@
   </div>
 </main>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
   const enterBtn = document.getElementById('enterBtn');
   const loadingScreen = document.getElementById('loadingScreen');
-  const audioContainer = document.getElementById('audioContainer');
   const TRACK_ID = 'nkTj2Hk6nEc';
 
-  enterBtn.addEventListener('click', ()=>{
-    if(!audioContainer.querySelector('iframe')){
-      const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube.com/embed/${TRACK_ID}?autoplay=1&loop=1&playlist=${TRACK_ID}&controls=0`;
-      iframe.allow = 'autoplay';
-      iframe.width = '0';
-      iframe.height = '0';
-      iframe.style.border = 'none';
-      audioContainer.appendChild(iframe);
+  let ytPlayer = null;
+  let ytReady = false;
+
+  // Loads as soon as the page does, muted, so it's already buffered
+  // by the time the person clicks — playback then starts instantly.
+  function onYouTubeIframeAPIReady(){
+    ytPlayer = new YT.Player('ytPlayer', {
+      height: '0',
+      width: '0',
+      videoId: TRACK_ID,
+      playerVars: {
+        autoplay: 1,
+        mute: 1,
+        controls: 0,
+        loop: 1,
+        playlist: TRACK_ID
+      },
+      events: {
+        onReady: ()=>{ ytReady = true; }
+      }
+    });
+  }
+
+  function startTrack(){
+    if(ytPlayer && ytReady){
+      ytPlayer.unMute();
+      ytPlayer.setVolume(100);
+      ytPlayer.playVideo();
+    }else{
+      const waitForReady = setInterval(()=>{
+        if(ytPlayer && ytReady){
+          ytPlayer.unMute();
+          ytPlayer.setVolume(100);
+          ytPlayer.playVideo();
+          clearInterval(waitForReady);
+        }
+      }, 50);
     }
+  }
+
+  enterBtn.addEventListener('click', ()=>{
+    startTrack();
     loadingScreen.classList.add('hide');
     setTimeout(()=> loadingScreen.remove(), 700);
   }, { once:true });
