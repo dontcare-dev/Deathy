@@ -48,6 +48,93 @@
       linear-gradient(180deg, rgba(6,12,28,0.42) 0%, rgba(5,9,22,0.62) 55%, rgba(4,7,18,0.78) 100%);
   }
 
+  /* ---------- loading screen ---------- */
+  #loadingScreen{
+    position:fixed; inset:0;
+    z-index:999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:18px;
+    overflow:hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #loadingScreen.hide{
+    opacity:0;
+    pointer-events:none;
+  }
+  .loading-video{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    z-index:0;
+  }
+  .loading-tint{
+    position:absolute; inset:0;
+    z-index:1;
+    background:
+      radial-gradient(circle at 50% 32%, rgba(79,139,255,0.55) 0%, rgba(33,80,196,0.6) 38%, rgba(12,31,92,0.78) 72%, rgba(5,12,40,0.88) 100%);
+  }
+  .enter-wrap, .enter-note{
+    position:relative;
+    z-index:2;
+  }
+
+  .enter-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .enter-ring{
+    position:absolute;
+    inset:-14px;
+    border-radius:100px;
+    border:2px solid rgba(255,255,255,0.35);
+    animation: ring-pulse 2.4s ease-out infinite;
+  }
+  @keyframes ring-pulse{
+    0%{ transform:scale(0.94); opacity:0.9; }
+    100%{ transform:scale(1.25); opacity:0; }
+  }
+
+  .enter-btn{
+    position:relative;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size: clamp(1.05rem, 3vw, 1.3rem);
+    color: var(--blue-deep);
+    padding: 18px 42px;
+    border-radius: 100px;
+    border:none;
+    cursor:pointer;
+    background: linear-gradient(160deg, #ffffff, #e7efff);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.95) inset,
+      0 20px 45px -12px rgba(4,12,38,0.65),
+      0 0 0 1px rgba(255,255,255,0.55);
+    letter-spacing:0.01em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .enter-btn:hover{
+    transform: translateY(-3px);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.95) inset,
+      0 26px 55px -12px rgba(4,12,38,0.7),
+      0 0 0 1px rgba(255,255,255,0.6);
+  }
+  .enter-btn:active{ transform: translateY(0) scale(0.96); }
+  .enter-btn:focus-visible{ outline:2px solid #fff; outline-offset:4px; }
+
+  .enter-note{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.05em;
+    color: rgba(255,255,255,0.65);
+    text-transform:uppercase;
+  }
+
   /* ---------- layout ---------- */
   .stage{
     min-height:100vh;
@@ -289,6 +376,20 @@
 </head>
 <body>
 
+<div id="loadingScreen">
+  <video class="loading-video" autoplay muted loop playsinline>
+    <source src="https://files.catbox.moe/29xlgg.mp4" type="video/mp4">
+  </video>
+  <div class="loading-tint"></div>
+  <div class="enter-wrap">
+    <span class="enter-ring" aria-hidden="true"></span>
+    <button class="enter-btn" id="enterBtn">Click to enter</button>
+  </div>
+  <span class="enter-note">sound on</span>
+</div>
+
+<div id="audioContainer" style="position:fixed; width:0; height:0; overflow:hidden;" aria-hidden="true"></div>
+
 <video class="bg-video" autoplay muted loop playsinline>
   <source src="https://files.catbox.moe/hqovmp.mp4" type="video/mp4">
 </video>
@@ -335,6 +436,27 @@
     </div>
   </div>
 </main>
+
+<script>
+  const enterBtn = document.getElementById('enterBtn');
+  const loadingScreen = document.getElementById('loadingScreen');
+  const audioContainer = document.getElementById('audioContainer');
+  const TRACK_ID = 'nkTj2Hk6nEc';
+
+  enterBtn.addEventListener('click', ()=>{
+    if(!audioContainer.querySelector('iframe')){
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${TRACK_ID}?autoplay=1&loop=1&playlist=${TRACK_ID}&controls=0`;
+      iframe.allow = 'autoplay';
+      iframe.width = '0';
+      iframe.height = '0';
+      iframe.style.border = 'none';
+      audioContainer.appendChild(iframe);
+    }
+    loadingScreen.classList.add('hide');
+    setTimeout(()=> loadingScreen.remove(), 700);
+  }, { once:true });
+</script>
 
 <script>
   const card = document.getElementById('card');
