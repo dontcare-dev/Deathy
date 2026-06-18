@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ded — @deathy_dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white: #ffffff;
+    --glass-strong: rgba(255,255,255,0.94);
+    --glass: rgba(255,255,255,0.74);
+    --glass-edge: rgba(255,255,255,0.65);
+    --ink: #101a30;
+    --ink-soft: #51607e;
+    --blue: #2f6fef;
+    --blue-deep: #143a9c;
+    --blue-glow: #8fc1ff;
+    --shadow-ambient: 0 30px 70px -18px rgba(6, 14, 34, 0.55);
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; height:100%; }
+
+  body{
+    font-family:'Inter', sans-serif;
+    color: var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- background video ---------- */
+  .bg-video{
+    position:fixed; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    z-index:-3;
+    filter: saturate(1.05) brightness(0.9);
+  }
+
+  .bg-overlay{
+    position:fixed; inset:0; z-index:-2;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(20,40,90,0.15), transparent 60%),
+      linear-gradient(180deg, rgba(6,12,28,0.42) 0%, rgba(5,9,22,0.62) 55%, rgba(4,7,18,0.78) 100%);
+  }
+
+  /* ---------- layout ---------- */
+  .stage{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 64px 20px 40px;
+    perspective: 1400px;
+  }
+
+  .card{
+    width:100%;
+    max-width:540px;
+    border-radius:30px;
+    background: linear-gradient(165deg, var(--glass-strong), var(--glass));
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid var(--glass-edge);
+    box-shadow:
+      0 1.5px 0 rgba(255,255,255,0.95) inset,
+      0 -30px 50px rgba(255,255,255,0.35) inset,
+      var(--shadow-ambient),
+      0 10px 40px -6px rgba(47,111,239,0.4);
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease-out;
+    opacity:0;
+    animation: rise 0.9s 0.1s cubic-bezier(.2,.8,.2,1) forwards;
+    overflow:hidden;
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(26px) scale(0.97); }
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+
+  /* ---------- banner + avatar ---------- */
+  .banner-wrap{
+    position:relative;
+    height: clamp(150px, 30vw, 230px);
+    overflow:hidden;
+  }
+  .banner{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    transform: scale(1.06);
+    animation: drift 26s ease-in-out infinite alternate;
+  }
+  @keyframes drift{ from{ transform: scale(1.06) translateY(0); } to{ transform: scale(1.12) translateY(-2%); } }
+
+  .banner-fade{
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(16,26,48,0) 45%, rgba(255,255,255,0.55) 92%, rgba(255,255,255,0.9) 100%);
+  }
+
+  .avatar-wrap{
+    position:absolute;
+    bottom: -38px;
+    left: 28px;
+    transform: translateZ(50px);
+    z-index:3;
+  }
+  .avatar{
+    width: clamp(84px, 18vw, 116px);
+    height: clamp(84px, 18vw, 116px);
+    border-radius:50%;
+    display:block;
+    object-fit:cover;
+    border: 4px solid #fff;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.95) inset,
+      0 0 0 3px rgba(47,111,239,0.32),
+      0 14px 30px -6px rgba(15,30,70,0.55);
+  }
+  .status-dot{
+    position:absolute;
+    right:2px; bottom:2px;
+    width:18px; height:18px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #cdf3d8, #36c172 60%, #1e8e4f 100%);
+    border:3px solid #fff;
+    box-shadow: 0 2px 6px rgba(20,60,30,0.4);
+  }
+  .status-dot::after{
+    content:"";
+    position:absolute; inset:-4px;
+    border-radius:50%;
+    border:2px solid rgba(54,193,114,0.45);
+    animation: pulse 2.2s ease-out infinite;
+  }
+  @keyframes pulse{ 0%{ transform:scale(0.8); opacity:0.8;} 100%{ transform:scale(1.6); opacity:0;} }
+
+  /* ---------- body ---------- */
+  .card-body{
+    padding: 56px 28px 32px;
+    transform: translateZ(20px);
+  }
+
+  .identity{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .name{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size: clamp(2.1rem, 6vw, 2.8rem);
+    line-height:1;
+    margin:0;
+    letter-spacing:-0.02em;
+    color: var(--ink);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.9), 0 8px 20px rgba(47,111,239,0.28);
+  }
+
+  .handle-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:4px;
+  }
+  .handle{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.92rem;
+    color: var(--ink-soft);
+    letter-spacing:0.01em;
+  }
+
+  .copy-btn{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    width:26px; height:26px;
+    border-radius:9px;
+    display:grid;
+    place-items:center;
+    background: linear-gradient(160deg, #ffffff, #eef3ff);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.9) inset,
+      0 1px 4px rgba(20,40,100,0.18),
+      0 0 0 1px rgba(47,111,239,0.18);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position:relative;
+  }
+  .copy-btn:hover{ transform: translateY(-1px); }
+  .copy-btn:active{ transform: translateY(0px) scale(0.95); }
+  .copy-btn:focus-visible{
+    outline:2px solid var(--blue);
+    outline-offset:2px;
+  }
+  .copy-btn svg{ width:13px; height:13px; stroke: var(--blue-deep); }
+
+  .copy-tip{
+    position:absolute;
+    top:-30px; left:50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--ink);
+    color:#fff;
+    font-size:0.7rem;
+    font-family:'Inter',sans-serif;
+    padding:4px 9px;
+    border-radius:7px;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .copy-tip.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  .bio{
+    margin: 22px 0 0;
+    font-size: clamp(1.02rem, 2.6vw, 1.18rem);
+    line-height:1.55;
+    color: var(--ink);
+    font-weight:500;
+    max-width: 38ch;
+  }
+  .bio::before{ content:"“"; color: var(--blue); font-family:'Space Grotesk',sans-serif; }
+  .bio::after{ content:"”"; color: var(--blue); font-family:'Space Grotesk',sans-serif; }
+
+  .chips{
+    display:flex;
+    gap:10px;
+    margin-top:22px;
+    flex-wrap:wrap;
+  }
+  .chip{
+    font-size:0.82rem;
+    font-weight:600;
+    padding:8px 16px;
+    border-radius:100px;
+    font-family:'Inter',sans-serif;
+    letter-spacing:0.01em;
+  }
+  .chip--ghost{
+    color: var(--ink-soft);
+    background: rgba(255,255,255,0.55);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 1px 3px rgba(20,40,100,0.12);
+    border:1px solid rgba(255,255,255,0.7);
+  }
+  .chip--blue{
+    color:#fff;
+    background: linear-gradient(160deg, #4f8bff, var(--blue-deep));
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.5) inset,
+      0 8px 18px -4px rgba(20,60,160,0.55),
+      0 0 0 1px rgba(20,58,156,0.4);
+  }
+
+  .divider{
+    margin: 28px 0 0;
+    height:1px;
+    background: linear-gradient(90deg, transparent, rgba(47,111,239,0.25), transparent);
+  }
+
+  .meta-row{
+    margin-top:18px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.74rem;
+    color: rgba(81,96,126,0.85);
+    letter-spacing:0.02em;
+  }
+  .meta-dot{ width:5px; height:5px; border-radius:50%; background: var(--blue); }
+
+  @media (max-width: 420px){
+    .card-body{ padding: 50px 22px 26px; }
+    .avatar-wrap{ left:20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .banner, .status-dot::after, .card{ animation: none !important; }
+    .card{ opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<video class="bg-video" autoplay muted loop playsinline>
+  <source src="https://files.catbox.moe/hqovmp.mp4" type="video/mp4">
+</video>
+<div class="bg-overlay"></div>
+
+<main class="stage">
+  <div class="card" id="card">
+    <div class="banner-wrap">
+      <img class="banner" src="https://i.ibb.co/SwBZwLZL/40d5429f161eea1bd948f0d5d19de08e.jpg" alt="">
+      <div class="banner-fade"></div>
+      <div class="avatar-wrap">
+        <img class="avatar" src="https://i.ibb.co/67mzvFbJ/4b7f9782977aea6e8a59dc9d6dae0317.gif" alt="ded's avatar">
+        <span class="status-dot" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="identity">
+        <h1 class="name">ded</h1>
+      </div>
+      <div class="handle-row">
+        <span class="handle">@deathy_dev</span>
+        <button class="copy-btn" id="copyBtn" aria-label="Copy username">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+            <path d="M5 15V5a2 2 0 0 1 2-2h10"></path>
+          </svg>
+          <span class="copy-tip" id="copyTip">Copied</span>
+        </button>
+      </div>
+
+      <p class="bio">I'm a developer and I'm cool</p>
+
+      <div class="chips">
+        <span class="chip chip--blue">Developer</span>
+        <span class="chip chip--ghost">Cool</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="meta-row">
+        <span class="meta-dot"></span>
+        <span>status: online</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const card = document.getElementById('card');
+  const stage = document.querySelector('.stage');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if(!reduceMotion){
+    stage.addEventListener('pointermove', (e)=>{
+      const r = stage.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      const rotY = x * 8;
+      const rotX = -y * 8;
+      card.style.transform = `rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+    });
+    stage.addEventListener('pointerleave', ()=>{
+      card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+  }
+
+  const copyBtn = document.getElementById('copyBtn');
+  const copyTip = document.getElementById('copyTip');
+  copyBtn.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText('deathy_dev');
+    }catch(err){}
+    copyTip.classList.add('show');
+    setTimeout(()=> copyTip.classList.remove('show'), 1400);
+  });
+</script>
+
+</body>
+</html>
